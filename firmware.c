@@ -62,11 +62,15 @@ void main()
             check++;
             check_lock=0;
         }
-         if(check == 5)
+         if(check == 1)
          {
              signal_out = 1;
              __delay_ms(1000);
+         }
+         if(check == 2)
+         {
              signal_out = 0;
+             __delay_ms(1000);
              check = 0;
          }
       
