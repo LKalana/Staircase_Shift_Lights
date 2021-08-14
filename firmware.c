@@ -1,9 +1,16 @@
-/*
- * File:   staircase_shift_lights firmware.c
- * Author: Liyanage Kalana Perera
+/* 
+ * File:   pwm_control_firmware_12f675.c
+ * Author: Liyanage Kalana Perera.
  *
- * Created on August 1, 2021, 8:05 AM
+ * Created on December 4, 2020, 7:17 PM
  */
+
+// PIC12F675 Configuration Bit Settings
+
+/*
+ Updates :- Yellow Fade-In and Fade-Out added.
+*/
+
 // 'C' source line config statements
 
 // CONFIG
@@ -23,107 +30,73 @@
 #include <stdio.h>
 #include <stdlib.h>
 #define _XTAL_FREQ 4000000
+/*
+ * 
+ */
+#define darksensor_input GPIObits.GPIO0
+#define infrared_input GPIObits.GPIO1
+#define signal_out GPIObits.GPIO2
 
-/* Defining Parameters */
-#define SRCLK GPIObits.GPIO0
-#define SER GPIObits.GPIO1
-#define RCLK GPIObits.GPIO2
-#define inputA GPIObits.GPIO4
-#define inputB GPIObits.GPIO5
-//--------------------------------- Intializing Registers.
-void shift_init()
-{
- //--------------------------------- Powering/Initializing Registers.
- //--------------------------------- Enabling Registers.
- //---------------------
- SER = 1;
- SRCLK = 1;
- __delay_ms(1);
- SRCLK = 0;
- __delay_ms(1);
- RCLK = 1;
- __delay_ms(10);
- RCLK = 0;
- SER = 0;
- for(int i=0;i<8;i++)
-  {
-    SRCLK = 1;
-    __delay_ms(1);
-    SRCLK = 0;
-    __delay_ms(1);
-    RCLK = 1;
-    __delay_ms(1);
-    RCLK = 0;
-    __delay_ms(100);
-  }
- //--------------------------------- Disabling Registers.
- //---------------------
-}
-//--------------------------------- Custom Function to reset Registers.
-void shift_reset()
-{
- SER = 0;
- for(int i=0;i<8;i++)
-    {
-      SRCLK = 1;
-      __delay_ms(1);
-      SRCLK = 0;
-      __delay_ms(1);
-    }
-    RCLK = 1;
-    __delay_ms(1);
-    RCLK = 0;
-}
-//------------------------------------------ Custom Function to display Registers.
-void shift_lights()
-{
-    for(int i=0;i<9;i++)
-        {
-          SRCLK = 1;
-          __delay_ms(1);
-          SRCLK = 0;
-          __delay_ms(1);
-          SER = 1;
-        }
-      RCLK = 1;
-      __delay_ms(1);
-      RCLK = 0;
-      __delay_ms(100);
-      //--------------------------------- Enabling Registers.
-     //---------------------  
-}
+signed int check = 0;
+signed int check_lock = 0;
 void main()
 {
 // OSCCALbits.CAL = 0xFF;// Set Maximum Oscillator frequency.
  ANSEL = 0x00;
  CMCONbits.CM = 0x07;
- TRISIO = 0x00;
+ TRISIObits.TRISIO0 = 1;
+ TRISIObits.TRISIO2 = 1;
+ TRISIObits.TRISIO2 = 0;
  GPIO = 0x00;
+ __delay_ms(1000);
  while(1)
    {
-     // When go downstairs.
-     if(inputA == 1 && inputB == 0)
-     {
-       shift_lights();
-       __delay_ms(10000);
-       shift_reset();
-     }
-     // When go Upstairs.
-     if(inputA == 0 && inputB == 1)
-     {
-       shift_lights();
-       __delay_ms(10000);
-       shift_reset();
-     }
-     // When default.
-     if(inputA == 1 && inputB == 1)
-     {
-       shift_reset();
-     }
-     // When default.
-     if(inputA == 0 && inputB == 0)
-     {
-       shift_reset();
-     }
+     START:
+      if(infrared_input == 0)
+      {
+          check_lock = 1;
+         __delay_ms(1);
+      }
+        if(infrared_input == 1 && check_lock == 1)
+        {
+            check++;
+            check_lock=0;
+        }
+         if(check == 5)
+         {
+             signal_out = 1;
+             __delay_ms(1000);
+             signal_out = 0;
+             check = 0;
+         }
+      
   }
 }
+/*
+ * 
+  if(infrared_input == 0)
+      {
+          check_lock = 1;
+         __delay_ms(1);
+        if(infrared_input == 1 && check_lock == 1)
+        {
+            check=1;
+            check_lock=0;
+        }
+ if(check == 1)
+ {
+ signal_out = 1;
+ }else{
+ signal_out = 0;
+ } 
+   if(infrared_input == 0)
+      {
+          check_lock = 1;
+         __delay_ms(1);
+        if(infrared_input == 1 && check_lock == 1 && check == 1)
+        {
+            check=0;
+            check_lock=0;
+        }
+ 
+ */
