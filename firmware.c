@@ -65,12 +65,12 @@ void main()
          if(check == 1)
          {
              signal_out = 1;
-             __delay_ms(1000);
+             __delay_ms(1000);// Hardware implementation the delay value reduced to 100. But to avoid unwanted on/off delay>1000 is must.
          }
          if(check == 2)
          {
              signal_out = 0;
-             __delay_ms(1000);
+             __delay_ms(1000);// Hardware implementation the delay value reduced to 100. But to avoid unwanted on/off delay>1000 is must.
              check = 0;
          }
       
