@@ -1,15 +1,11 @@
 /* 
- * File:   pwm_control_firmware_12f675.c
+ * File:   staircase_firmware.c
  * Author: Liyanage Kalana Perera.
  *
- * Created on December 4, 2020, 7:17 PM
+ * Created on August 24, 2021, 5:12 PM
  */
 
 // PIC12F675 Configuration Bit Settings
-
-/*
- Updates :- Yellow Fade-In and Fade-Out added.
-*/
 
 // 'C' source line config statements
 
@@ -51,7 +47,6 @@ void main()
  __delay_ms(1000);
  while(1)
    {
-     START:
       if(infrared_input == 0)
       {
           check_lock = 1;
@@ -65,42 +60,14 @@ void main()
          if(check == 1)
          {
              signal_out = 1;
-             __delay_ms(1000);// Hardware implementation the delay value reduced to 100. But to avoid unwanted on/off delay>1000 is must.
+             __delay_ms(5);
          }
          if(check == 2)
          {
              signal_out = 0;
-             __delay_ms(1000);// Hardware implementation the delay value reduced to 100. But to avoid unwanted on/off delay>1000 is must.
+             __delay_ms(5);
              check = 0;
          }
       
   }
 }
-/*
- * 
-  if(infrared_input == 0)
-      {
-          check_lock = 1;
-         __delay_ms(1);
-        if(infrared_input == 1 && check_lock == 1)
-        {
-            check=1;
-            check_lock=0;
-        }
- if(check == 1)
- {
- signal_out = 1;
- }else{
- signal_out = 0;
- } 
-   if(infrared_input == 0)
-      {
-          check_lock = 1;
-         __delay_ms(1);
-        if(infrared_input == 1 && check_lock == 1 && check == 1)
-        {
-            check=0;
-            check_lock=0;
-        }
- 
- */
