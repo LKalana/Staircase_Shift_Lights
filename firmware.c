@@ -29,9 +29,10 @@
 /*
  * 
  */
-#define darksensor_input GPIObits.GPIO0
+
 #define infrared_input GPIObits.GPIO1
-#define signal_out GPIObits.GPIO2
+#define darksensor_input GPIObits.GPIO2
+#define signal_out GPIObits.GPIO4
 
 signed int check = 0;
 signed int check_lock = 0;
@@ -40,14 +41,25 @@ void main()
 // OSCCALbits.CAL = 0xFF;// Set Maximum Oscillator frequency.
  ANSEL = 0x00;
  CMCONbits.CM = 0x07;
- TRISIObits.TRISIO0 = 1;
+ TRISIObits.TRISIO1 = 1;
  TRISIObits.TRISIO2 = 1;
- TRISIObits.TRISIO2 = 0;
+ TRISIObits.TRISIO4 = 0;
+ //INTCON = 0x90;
+ //OPTION_REG = 0x40;
+ //IOCbits.IOCB2 = 1;// Interrupt change enabled.
  GPIO = 0x00;
  __delay_ms(1000);
  while(1)
    {
-      if(infrared_input == 0)
+     START:
+    if(darksensor_input != 1)
+    {
+       while(darksensor_input != 1)
+       {
+           signal_out = 0;
+       }
+    }
+    if(infrared_input == 0)
       {
           check_lock = 1;
          __delay_ms(1);
@@ -59,8 +71,8 @@ void main()
         }
          if(check == 1)
          {
-             signal_out = 1;
-             __delay_ms(5);
+            signal_out = 1;
+            goto START;
          }
          if(check == 2)
          {
@@ -68,6 +80,5 @@ void main()
              __delay_ms(5);
              check = 0;
          }
-      
   }
-}
+ }
